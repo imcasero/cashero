@@ -42,7 +42,32 @@ FRONTEND_PORT=5174 ./dev.sh       # change the web port
 ```
 
 The frontend receives the API URL through `VITE_API_URL`, which the script
-derives from `BACKEND_PORT`.
+derives from `BACKEND_PORT` (this takes precedence over `frontend/.env`).
+
+## Environment variables
+
+Both projects ship a tracked `.env.example`. Copy it once per clone — the real
+`.env` files are gitignored:
+
+```bash
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env
+```
+
+| Variable        | Where       | Default                 | What it does                                  |
+| --------------- | ----------- | ----------------------- | --------------------------------------------- |
+| `ENVIRONMENT`   | `backend/`  | `local`                 | Environment name the API reports itself as    |
+| `CORS_ORIGINS`  | `backend/`  | `http://localhost:5173` | Comma-separated origins allowed by CORS       |
+| `VITE_API_URL`  | `frontend/` | `http://localhost:8000` | Base URL the browser calls the API on         |
+
+Backend settings are read by `backend/settings.py` (pydantic-settings, which
+loads `backend/.env` automatically). The frontend reads `VITE_API_URL` in
+`frontend/src/lib/env.ts` and fails fast at startup if it is missing; only
+variables prefixed with `VITE_` are exposed to the browser, and Vite inlines
+them at build time, so restart the dev server after editing `.env`.
+
+If you change `FRONTEND_PORT`, add the new origin to `CORS_ORIGINS` or the
+browser will block the API calls.
 
 ## Running the services by hand
 
