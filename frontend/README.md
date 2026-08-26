@@ -1,34 +1,46 @@
-# React + TypeScript + Vite
+# Cashero — frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+React 19 + TypeScript on Vite, talking to the FastAPI backend in `../backend`.
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
-
-Note: This will impact Vite dev & build performances.
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+cp .env.example .env   # once per clone
+pnpm install
+pnpm dev               # http://localhost:5173
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Use `pnpm` only — mixing in npm or yarn desyncs `pnpm-lock.yaml`.
+
+## Environment
+
+| Variable       | Default                 | What it does                          |
+| -------------- | ----------------------- | ------------------------------------- |
+| `VITE_API_URL` | `http://localhost:8000` | Base URL the browser calls the API on |
+
+Only `VITE_`-prefixed variables reach the browser, and Vite inlines them at
+build time — restart the dev server after editing `.env`. `src/lib/env.ts`
+reads and normalizes the value, and throws at startup if it is missing, so a
+misconfigured environment fails loudly instead of firing requests at
+`undefined/health`. `../dev.sh` passes `VITE_API_URL` in the shell environment,
+which overrides `.env`.
+
+## Layout
+
+```
+src/
+├── lib/env.ts   # env parsing + validation
+├── lib/api.ts   # fetch wrapper (ApiError) and typed endpoints
+├── App.tsx      # backend connection status
+└── index.css    # base styles, light/dark
+```
+
+Add endpoints next to `getHealth` in `src/lib/api.ts` so every call shares the
+base URL, JSON headers, and error handling.
+
+## Commands
+
+| Command        | What it does                        |
+| -------------- | ----------------------------------- |
+| `pnpm dev`     | Dev server with HMR                 |
+| `pnpm build`   | Type-check (`tsc -b`) and build      |
+| `pnpm preview` | Serve the production build          |
+| `pnpm lint`    | Run Oxlint                          |
