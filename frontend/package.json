@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
+    "format": "biome format --write .",
+    "format:check": "biome check .",
     "preview": "vite preview"
   },
   "dependencies": {
