@@ -1,34 +1,34 @@
-import { useCallback, useEffect, useState } from 'react'
-import { getHealth } from './lib/api'
-import { env } from './lib/env'
+import { useCallback, useEffect, useState } from 'react';
+import { getHealth } from './lib/api';
+import { env } from './lib/env';
 
 type Connection =
   | { state: 'loading' }
   | { state: 'ok'; status: string }
-  | { state: 'error'; message: string }
+  | { state: 'error'; message: string };
 
 function App() {
-  const [connection, setConnection] = useState<Connection>({ state: 'loading' })
+  const [connection, setConnection] = useState<Connection>({ state: 'loading' });
 
   const check = useCallback((signal?: AbortSignal) => {
-    setConnection({ state: 'loading' })
+    setConnection({ state: 'loading' });
 
     getHealth(signal)
       .then((health) => setConnection({ state: 'ok', status: health.status }))
       .catch((error: unknown) => {
-        if (signal?.aborted) return
+        if (signal?.aborted) return;
         setConnection({
           state: 'error',
           message: error instanceof Error ? error.message : 'Error desconocido',
-        })
-      })
-  }, [])
+        });
+      });
+  }, []);
 
   useEffect(() => {
-    const controller = new AbortController()
-    check(controller.signal)
-    return () => controller.abort()
-  }, [check])
+    const controller = new AbortController();
+    check(controller.signal);
+    return () => controller.abort();
+  }, [check]);
 
   return (
     <main className="app">
@@ -58,16 +58,14 @@ function App() {
           </dd>
         </dl>
 
-        {connection.state === 'error' && (
-          <p className="error">{connection.message}</p>
-        )}
+        {connection.state === 'error' && <p className="error">{connection.message}</p>}
 
         <button type="button" onClick={() => check()}>
           Reintentar
         </button>
       </section>
     </main>
-  )
+  );
 }
 
-export default App
+export default App;

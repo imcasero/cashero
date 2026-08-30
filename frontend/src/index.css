@@ -8,10 +8,10 @@
   --danger: #dc2626;
   --muted: #a1a1aa;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --sans: system-ui, "Segoe UI", Roboto, sans-serif;
   --mono: ui-monospace, SFMono-Regular, Consolas, monospace;
 
-  font: 16px/1.5 var(--sans);
+  font: 16px / 1.5 var(--sans);
   color: var(--text);
   background: var(--bg);
   color-scheme: light dark;
@@ -85,7 +85,7 @@ h2 {
 }
 
 .badge {
-  font: 500 13px/1 var(--mono);
+  font: 500 13px / 1 var(--mono);
   padding: 6px 10px;
   border-radius: 999px;
   border: 1px solid var(--border);
@@ -120,7 +120,7 @@ dd {
 }
 
 code {
-  font: 13px/1.4 var(--mono);
+  font: 13px / 1.4 var(--mono);
   color: var(--text-strong);
 }
 
@@ -132,7 +132,7 @@ code {
 
 button {
   align-self: flex-start;
-  font: 500 14px/1 var(--sans);
+  font: 500 14px / 1 var(--sans);
   padding: 10px 16px;
   border-radius: 8px;
   border: 1px solid var(--border);
