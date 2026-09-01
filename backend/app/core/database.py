@@ -1,6 +1,8 @@
 from collections.abc import AsyncGenerator
 from functools import lru_cache
+from typing import Annotated
 
+from fastapi import Depends
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -8,7 +10,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from app.config import settings
+from app.core.config import settings
 
 
 @lru_cache
@@ -37,3 +39,7 @@ async def get_session() -> AsyncGenerator[AsyncSession]:
     """FastAPI dependency: yields a session and closes it when the request ends."""
     async with get_sessionmaker()() as session:
         yield session
+
+
+# FastAPI dependency alias: annotate endpoint params as `session: SessionDep`.
+SessionDep = Annotated[AsyncSession, Depends(get_session)]

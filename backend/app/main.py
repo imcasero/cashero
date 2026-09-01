@@ -1,13 +1,8 @@
-from typing import Annotated
-
-from fastapi import Depends, FastAPI
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.auth import require_api_key
-from app.config import settings
-from app.db import get_session
+from app.core.config import settings
+from app.system.router import router as system_router
 
 app = FastAPI(title=settings.app_name)
 
@@ -19,17 +14,5 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-SessionDep = Annotated[AsyncSession, Depends(get_session)]
-
-
-@app.get("/health")
-def health():
-    """Public: liveness probe, no auth."""
-    return {"status": "ok"}
-
-
-@app.get("/db-check", dependencies=[Depends(require_api_key)])
-async def db_check(session: SessionDep):
-    """Runs a trivial query to prove the Postgres connection works."""
-    result = await session.execute(text("select 1"))
-    return {"db": result.scalar_one()}
+# Register one router per feature here.
+app.include_router(system_router)
