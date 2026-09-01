@@ -1,15 +1,15 @@
-// Monorepo: frontend (Vite) y backend (FastAPI).
+// Monorepo: frontend (Vite) and backend (FastAPI).
 [
   {
     "label": "Backend: FastAPI (uvicorn)",
     "adapter": "Debugpy",
     "request": "launch",
     "module": "uvicorn",
-    "args": ["main:app", "--reload", "--port", "8000"],
+    "args": ["app.main:app", "--reload", "--port", "8000"],
     "cwd": "$ZED_WORKTREE_ROOT/backend"
   },
   {
-    "label": "Backend: archivo actual",
+    "label": "Backend: current file",
     "adapter": "Debugpy",
     "request": "launch",
     "program": "$ZED_FILE",

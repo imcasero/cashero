@@ -16,16 +16,20 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
   try {
     response = await fetch(`${env.apiUrl}${path}`, {
       ...init,
-      headers: { 'Content-Type': 'application/json', ...init?.headers },
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-Key': env.apiKey,
+        ...init?.headers,
+      },
     });
   } catch {
-    throw new ApiError(0, `No se pudo conectar con ${env.apiUrl}`);
+    throw new ApiError(0, `Could not connect to ${env.apiUrl}`);
   }
 
   if (!response.ok) {
     throw new ApiError(
       response.status,
-      `${init?.method ?? 'GET'} ${path} respondio ${response.status}`,
+      `${init?.method ?? 'GET'} ${path} responded ${response.status}`,
     );
   }
 

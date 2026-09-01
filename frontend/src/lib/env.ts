@@ -1,12 +1,21 @@
 const apiUrl = import.meta.env.VITE_API_URL;
+const apiKey = import.meta.env.VITE_API_KEY;
 
 if (!apiUrl) {
   throw new Error(
-    'Falta VITE_API_URL. Copia frontend/.env.example a frontend/.env y reinicia el dev server.',
+    'Missing VITE_API_URL. Copy frontend/.env.example to frontend/.env and restart the dev server.',
+  );
+}
+
+if (!apiKey) {
+  throw new Error(
+    'Missing VITE_API_KEY. It must match API_KEY in backend/.env. Restart the dev server after setting it.',
   );
 }
 
 export const env = {
-  /** URL base de la API, normalizada sin barra final. */
+  /** API base URL, normalized without a trailing slash. */
   apiUrl: apiUrl.replace(/\/+$/, ''),
+  /** Static key sent on every request as the X-API-Key header. */
+  apiKey,
 } as const;

@@ -51,7 +51,7 @@ start_backend() {
   (cd "$ROOT/backend" && uv sync)
 
   log "starting backend"
-  (cd "$ROOT/backend" && uv run fastapi dev main.py --port "$BACKEND_PORT") &
+  (cd "$ROOT/backend" && uv run fastapi dev app/main.py --port "$BACKEND_PORT") &
   pids+=($!)
 }
 

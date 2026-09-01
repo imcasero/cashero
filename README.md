@@ -76,7 +76,7 @@ browser will block the API calls.
 ```bash
 cd backend
 uv sync                                   # create .venv and install dependencies
-uv run fastapi dev main.py                # http://localhost:8000
+uv run fastapi dev app/main.py            # http://localhost:8000
 ```
 
 ### Frontend
@@ -93,7 +93,7 @@ pnpm dev                                  # http://localhost:5173
 | -------------------------------- | ----------- | ------------------------------------ |
 | `uv sync`                        | `backend/`  | Install/refresh Python dependencies  |
 | `uv add <package>`               | `backend/`  | Add a dependency and update the lock |
-| `uv run fastapi dev main.py`     | `backend/`  | Dev server with auto-reload          |
+| `uv run fastapi dev app/main.py` | `backend/`  | Dev server with auto-reload          |
 | `pnpm dev`                       | `frontend/` | Vite dev server with HMR             |
 | `pnpm build`                     | `frontend/` | Type-check and build for production  |
 | `pnpm preview`                   | `frontend/` | Serve the production build           |
