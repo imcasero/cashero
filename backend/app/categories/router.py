@@ -22,6 +22,18 @@ async def get_category_or_404(session: AsyncSession, category_id: uuid.UUID) -> 
     return db_category
 
 
+async def commit_or_409(session: AsyncSession, name: str | None) -> None:
+    """Commit, translating a unique-constraint violation into a 409."""
+    try:
+        await session.commit()
+    except IntegrityError as exc:
+        await session.rollback()
+        raise HTTPException(
+            status.HTTP_409_CONFLICT,
+            f"A category named {name!r} already exists",
+        ) from exc
+
+
 @router.get("")
 async def get_categories(session: SessionDep) -> list[CategoryRead]:
     result = await session.execute(select(Category))
@@ -32,14 +44,7 @@ async def get_categories(session: SessionDep) -> list[CategoryRead]:
 async def create_category(category: CategoryCreate, session: SessionDep) -> CategoryRead:
     db_category = Category(**category.model_dump())
     session.add(db_category)
-    try:
-        await session.commit()
-    except IntegrityError as exc:
-        await session.rollback()
-        raise HTTPException(
-            status.HTTP_409_CONFLICT,
-            f"A category named {category.name!r} already exists",
-        ) from exc
+    await commit_or_409(session, category.name)
     await session.refresh(db_category)
     return CategoryRead.model_validate(db_category)
 
@@ -51,14 +56,7 @@ async def update_category(
     db_category = await get_category_or_404(session, category_id)
     for key, value in category.model_dump(exclude_unset=True).items():
         setattr(db_category, key, value)
-    try:
-        await session.commit()
-    except IntegrityError as exc:
-        await session.rollback()
-        raise HTTPException(
-            status.HTTP_409_CONFLICT,
-            f"A category named {category.name!r} already exists",
-        ) from exc
+    await commit_or_409(session, category.name)
     await session.refresh(db_category)
     return CategoryRead.model_validate(db_category)
 
