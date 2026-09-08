@@ -48,3 +48,12 @@ async def update_category(
     await session.commit()
     await session.refresh(db_category)
     return CategoryRead.model_validate(db_category)
+
+
+@router.delete("/{category_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_category(category_id: uuid.UUID, session: SessionDep) -> None:
+    db_category = await session.get(Category, category_id)
+    if not db_category:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Category not found")
+    await session.delete(db_category)
+    await session.commit()
