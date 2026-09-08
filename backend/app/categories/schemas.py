@@ -20,3 +20,9 @@ class CategoryRead(BaseModel):
     model_config = {
         "from_attributes": True,
     }
+
+
+class CategoryUpdate(BaseModel):
+    name: str | None = None
+    kind: CategoryKind | None = None
+    color: str | None = None
