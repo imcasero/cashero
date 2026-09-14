@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.accounts.router import router as accounts_router
 from app.categories.router import router as categories_router
 from app.core.config import settings
 from app.system.router import router as system_router
@@ -18,3 +19,4 @@ app.add_middleware(
 # Register one router per feature here.
 app.include_router(system_router)
 app.include_router(categories_router)
+app.include_router(accounts_router)
