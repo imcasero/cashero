@@ -54,9 +54,11 @@ class Movement(Base):
         ),
         server_default="manual",
     )
-    template_id: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey("movement_templates.id")
-    )
+    # No ForeignKey() here yet: SQLAlchemy needs the referenced table registered
+    # in Base.metadata to compute insert order, and MovementTemplate has no model
+    # yet (IMC-22). The DB migration already enforces the real FK constraint.
+    # Add ForeignKey("movement_templates.id") once that model exists.
+    template_id: Mapped[uuid.UUID | None]
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(server_default=func.now())
 
