@@ -1,7 +1,7 @@
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -21,11 +21,18 @@ async def get_account_or_404(session: AsyncSession, account_id: uuid.UUID) -> Ac
 
 
 _CONSTRAINT_MESSAGES = {
-    "accounts_one_primary": "Another account is already marked as primary",
     "accounts_interest_consistent": (
         "interest_type and interest_rate must be both set or both empty"
     ),
 }
+
+
+async def clear_other_primary_accounts(session: AsyncSession, keep_id: uuid.UUID | None) -> None:
+    """Unset is_primary on every other account so at most one stays primary."""
+    stmt = update(Account).where(Account.is_primary.is_(True)).values(is_primary=False)
+    if keep_id is not None:
+        stmt = stmt.where(Account.id != keep_id)
+    await session.execute(stmt)
 
 
 async def commit_or_409(session: AsyncSession) -> None:
@@ -56,6 +63,8 @@ async def get_account(account_id: uuid.UUID, session: SessionDep) -> AccountRead
 
 @router.post("", status_code=status.HTTP_201_CREATED)
 async def create_account(account: AccountCreate, session: SessionDep) -> AccountRead:
+    if account.is_primary:
+        await clear_other_primary_accounts(session, keep_id=None)
     db_account = Account(**account.model_dump())
     session.add(db_account)
     await commit_or_409(session)
@@ -68,7 +77,10 @@ async def update_account(
     account_id: uuid.UUID, account: AccountUpdate, session: SessionDep
 ) -> AccountRead:
     db_account = await get_account_or_404(session, account_id)
-    for key, value in account.model_dump(exclude_unset=True).items():
+    payload = account.model_dump(exclude_unset=True)
+    if payload.get("is_primary") is True:
+        await clear_other_primary_accounts(session, keep_id=account_id)
+    for key, value in payload.items():
         setattr(db_account, key, value)
     await commit_or_409(session)
     await session.refresh(db_account)
