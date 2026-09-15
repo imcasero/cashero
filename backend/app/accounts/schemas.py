@@ -35,3 +35,9 @@ class AccountUpdate(BaseModel):
     interest_type: AccountInterestType | None = None
     interest_rate: float | None = None
     is_primary: bool | None = None
+
+
+class AccountBalanceRead(BaseModel):
+    account_id: uuid.UUID
+    current_balance: float
+    model_config = {"from_attributes": True}

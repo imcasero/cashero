@@ -5,9 +5,10 @@ from sqlalchemy import select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.accounts.schemas import AccountCreate, AccountRead, AccountUpdate
+from app.accounts.schemas import AccountBalanceRead, AccountCreate, AccountRead, AccountUpdate
 from app.core.database import SessionDep
 from app.core.security import require_api_key
+from app.models.account_balances import AccountBalance
 from app.models.accounts import Account
 
 router = APIRouter(prefix="/accounts", tags=["accounts"], dependencies=[Depends(require_api_key)])
@@ -59,6 +60,15 @@ async def get_accounts(session: SessionDep) -> list[AccountRead]:
 async def get_account(account_id: uuid.UUID, session: SessionDep) -> AccountRead:
     db_account = await get_account_or_404(session, account_id)
     return AccountRead.model_validate(db_account)
+
+
+@router.get("/{account_id}/balance")
+async def get_account_balance(account_id: uuid.UUID, session: SessionDep) -> AccountBalanceRead:
+    await get_account_or_404(session, account_id)
+    balance = await session.get(AccountBalance, account_id)
+    if balance is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Account not found")
+    return AccountBalanceRead.model_validate(balance)
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
