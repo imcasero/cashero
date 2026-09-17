@@ -176,8 +176,9 @@ column; `monthly_balances` only snapshots the view at month close.
 | `categories` | `GET /categories`, `POST`, `PATCH /{id}`, `DELETE /{id}`                   |
 | `accounts`   | `GET /accounts`, `GET /{id}`, `GET /{id}/balance`, `POST`, `PATCH`, `DELETE` |
 | `movements`  | `GET /movements` (filters: `account_id`, `category_id`, `month=YYYY-MM`), `POST`, `PATCH /{id}`, `DELETE /{id}` |
+| `movement_templates` | `GET /movement-templates` (filters: `account_id`, `is_active`), `GET /{id}`, `POST`, `PATCH /{id}`, `DELETE /{id}` |
 
-`movement_templates`, `budgets`, `surplus_allocation_rules` and `monthly_balances` exist in SQL but
+`budgets`, `surplus_allocation_rules` and `monthly_balances` exist in SQL but
 have no API yet — that's the remaining backend work.
 
 ## Style
