@@ -179,8 +179,11 @@ column; `monthly_balances` only snapshots the view at month close.
 | `movement_templates` | `GET /movement-templates` (filters: `account_id`, `is_active`), `GET /{id}`, `POST`, `PATCH /{id}`, `DELETE /{id}` |
 | `surplus_allocation_rules` | `GET /surplus-allocation-rules`, `PUT` (replaces the whole set) |
 | `month_close` | `POST /month-close` (body `{"month": "YYYY-MM"}`), `GET /month-close?month=` |
+| `budgets`    | `GET /budgets?month=` (adds `spent`/`remaining`), `POST`, `PATCH /{id}`, `DELETE /{id}` |
 
-`budgets` exists in SQL but has no API yet — that's the remaining backend work.
+Every table now has an API. `GET /budgets` computes `spent` with a grouped `sum()` over the month's
+`expense` movements and never stores a counter — that is what makes a budget reset by itself; income
+and transfers in a category are excluded on purpose, or they would cancel out real spending.
 
 ## Month close
 
