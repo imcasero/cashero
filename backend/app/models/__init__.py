@@ -1,6 +1,7 @@
 from app.models.account_balances import AccountBalance
 from app.models.accounts import Account, AccountInterestType
 from app.models.base import Base
+from app.models.budgets import Budget
 from app.models.categories import Category, CategoryKind
 from app.models.monthly_balances import MonthlyBalance
 from app.models.movement_templates import MovementTemplate, TemplateFrequency
@@ -12,6 +13,7 @@ __all__ = [
     "AccountBalance",
     "AccountInterestType",
     "Base",
+    "Budget",
     "Category",
     "CategoryKind",
     "MonthlyBalance",
