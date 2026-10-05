@@ -11,10 +11,26 @@ uv add <package>                 # add a dep and update uv.lock
 uv run fastapi dev app/main.py   # dev server on :8000, docs at /docs
 uv run ruff check .              # lint
 uv run ruff format .             # format
+uv run pytest                    # unit tests (no database needed)
 ```
 
-No test suite exists yet. Manual verification is done through `/docs` or `GET /db-check`, which runs
-`select 1` against Postgres to prove the connection.
+`GET /db-check` runs `select 1` against Postgres to prove the connection; `/docs` is there for
+poking at endpoints by hand.
+
+## Tests
+
+`tests/` holds unit tests over the business rules, with no database and no HTTP: the models are
+built in memory by the factories in `tests/conftest.py`, since a SQLAlchemy object is a plain Python
+object until it is added to a session. The whole suite runs in well under a second.
+
+Write tests about **rules the product promises**, not about how the code reaches them — a test named
+`test_a_short_month_does_not_move_the_rent_for_good` survives a rewrite of the date arithmetic,
+while one asserting a helper's return value does not. Internal helpers are covered through the
+function that uses them.
+
+Not covered yet: anything that needs the database (the `POST /month-close` transaction as a whole,
+the 409 on closing a month twice, HTTP status codes). Those have been verified by hand against the
+remote Supabase instance.
 
 ## Layout
 
