@@ -177,9 +177,31 @@ column; `monthly_balances` only snapshots the view at month close.
 | `accounts`   | `GET /accounts`, `GET /{id}`, `GET /{id}/balance`, `POST`, `PATCH`, `DELETE` |
 | `movements`  | `GET /movements` (filters: `account_id`, `category_id`, `month=YYYY-MM`), `POST`, `PATCH /{id}`, `DELETE /{id}` |
 | `movement_templates` | `GET /movement-templates` (filters: `account_id`, `is_active`), `GET /{id}`, `POST`, `PATCH /{id}`, `DELETE /{id}` |
+| `surplus_allocation_rules` | `GET /surplus-allocation-rules`, `PUT` (replaces the whole set) |
+| `month_close` | `POST /month-close` (body `{"month": "YYYY-MM"}`), `GET /month-close?month=` |
 
-`budgets`, `surplus_allocation_rules` and `monthly_balances` exist in SQL but
-have no API yet — that's the remaining backend work.
+`budgets` exists in SQL but has no API yet — that's the remaining backend work.
+
+## Month close
+
+There are no crons: the close is manual, one `POST /month-close` behind a button. It runs in a
+single transaction and in this order — generate the recurring movements the templates owe (so the
+month counts them), compute income − expenses ignoring transfers, move the surplus out of the
+primary account according to the rules (a deficit runs the same rules backwards), then snapshot
+every account in `monthly_balances`.
+
+The pure logic lives in `app/month_close/{surplus,interest,balances}.py` and
+`app/movement_templates/recurrence.py` — no session, no FastAPI — while `router.py` and
+`recurrence_runner.py` are the only parts that touch the database. Keep that split: those rules are
+the easiest thing in the project to get subtly wrong.
+
+Two things to know:
+
+- **Interest is not a movement.** It only exists in `monthly_balances.interest_accrued`, so the
+  `account_balances` view does not include it. Each close therefore re-adds the interest accrued by
+  previous closes (`get_accrued_interest`), otherwise compound interest would never compound.
+- **Re-running a close is refused**, not idempotent: `monthly_balances` is unique per account and
+  month, and the endpoint checks that upfront so a double click can't leave the month half closed.
 
 ## Style
 
