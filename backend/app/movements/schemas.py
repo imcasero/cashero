@@ -44,9 +44,7 @@ class MovementCreate(BaseModel):
 
     @model_validator(mode="after")
     def check_counterparty_account(self) -> "MovementCreate":
-        check_counterparty_account_shape(
-            self.kind, self.account_id, self.counterparty_account_id
-        )
+        check_counterparty_account_shape(self.kind, self.account_id, self.counterparty_account_id)
         return self
 
 

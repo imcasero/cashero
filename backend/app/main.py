@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.accounts.router import router as accounts_router
 from app.categories.router import router as categories_router
 from app.core.config import settings
+from app.month_close.router import router as month_close_router
 from app.movement_templates.router import router as movement_templates_router
 from app.movements.router import router as movements_router
 from app.surplus_allocation_rules.router import router as surplus_allocation_rules_router
@@ -26,3 +27,4 @@ app.include_router(accounts_router)
 app.include_router(movements_router)
 app.include_router(movement_templates_router)
 app.include_router(surplus_allocation_rules_router)
+app.include_router(month_close_router)

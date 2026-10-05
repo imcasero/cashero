@@ -1,5 +1,4 @@
 import uuid
-from datetime import date
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import select
@@ -7,6 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import SessionDep
+from app.core.dates import MONTH_PATTERN, month_bounds
 from app.core.security import require_api_key
 from app.models.movements import Movement
 from app.movements.schemas import (
@@ -17,11 +17,7 @@ from app.movements.schemas import (
     check_counterparty_account_shape,
 )
 
-router = APIRouter(
-    prefix="/movements", tags=["movements"], dependencies=[Depends(require_api_key)]
-)
-
-MONTH_PATTERN = r"^\d{4}-(0[1-9]|1[0-2])$"
+router = APIRouter(prefix="/movements", tags=["movements"], dependencies=[Depends(require_api_key)])
 
 
 async def get_movement_or_404(session: AsyncSession, movement_id: uuid.UUID) -> Movement:
@@ -39,17 +35,8 @@ async def commit_or_422(session: AsyncSession) -> None:
         await session.rollback()
         raise HTTPException(
             status.HTTP_422_UNPROCESSABLE_CONTENT,
-            "account_id, counterparty_account_id or category_id does not "
-            "reference an existing row",
+            "account_id, counterparty_account_id or category_id does not reference an existing row",
         ) from exc
-
-
-def month_bounds(month: str) -> tuple[date, date]:
-    """'YYYY-MM' -> (first day of that month, first day of the next month)."""
-    year, month_num = (int(part) for part in month.split("-"))
-    start = date(year, month_num, 1)
-    end = date(year + (month_num == 12), month_num % 12 + 1, 1)
-    return start, end
 
 
 @router.get("")

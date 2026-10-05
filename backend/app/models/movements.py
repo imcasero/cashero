@@ -41,9 +41,7 @@ class Movement(Base):
     occurred_on: Mapped[date]
     description: Mapped[str | None]
     account_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("accounts.id"))
-    counterparty_account_id: Mapped[uuid.UUID | None] = mapped_column(
-        ForeignKey("accounts.id")
-    )
+    counterparty_account_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("accounts.id"))
     category_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("categories.id"))
     origin: Mapped[MovementOrigin] = mapped_column(
         PgEnum(
