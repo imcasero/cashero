@@ -118,7 +118,15 @@ The app is public, so `/docs`, `/redoc` and `/openapi.json` are only served when
 
 ## Frontend
 
-Still minimal. Two files carry the conventions:
+Styled with **Tailwind v4** (tokens from the design PDF in `@theme` inside `src/index.css`, dark by
+default, light with the same names; `tailwindcss()` is the first plugin in `vite.config.ts`). Routing is
+`react-router` (`BrowserRouter` in `src/app/Layout.tsx`: sidebar from 960px, top bar + bottom nav below)
+and server state is **TanStack Query** (one typed module per resource in `src/api/`, each with its hook).
+Pages live in `src/pages/`, shared presentational pieces in `src/components/`, and money/month
+formatting in `src/lib/format.ts` (`formatEur` forces es-ES grouping). Aggregates for Inicio are computed
+client-side from the existing endpoints. Not built yet: the add-movement dialog and every screen except
+Inicio. `apiFetch` still calls `response.json()` on every response, so it needs a 204 branch before any
+delete UI. Three files carry the base conventions:
 
 - `src/lib/env.ts` — reads and validates `VITE_API_URL`, throwing at import time if it is
   missing, and normalizes the URL. Always read env through this module, never

@@ -25,3 +25,8 @@ release. Add a tool name to select part of the graph. For example, run
 - [ ] If setup, runtime, or package-manager behavior looks wrong, run `vp env doctor` and include its output when asking for help.
 
 <!--VITE PLUS END-->
+
+## Project notes (outside the Vite+ managed block)
+
+- Vite+ (`vp`) is available for formatting and linting too, not only for dev and build: use `vp check`
+  (format, lint and type check in one go) or `vp lint`. Run `vp help` for the rest of the commands.
