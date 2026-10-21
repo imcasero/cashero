@@ -36,7 +36,10 @@ async def clear_other_primary_accounts(session: AsyncSession, keep_id: uuid.UUID
     await session.execute(stmt)
 
 
-async def commit_or_409(session: AsyncSession) -> None:
+async def commit_or_409(
+    session: AsyncSession,
+    fallback_detail: str = "The account could not be saved: constraint violated",
+) -> None:
     """Commit, translating a known constraint violation into a 409."""
     try:
         await session.commit()
@@ -44,7 +47,7 @@ async def commit_or_409(session: AsyncSession) -> None:
         await session.rollback()
         cause = exc.orig.__cause__ if exc.orig is not None else None
         constraint_name = getattr(cause, "constraint_name", None)
-        detail = "The account could not be saved: constraint violated"
+        detail = fallback_detail
         if isinstance(constraint_name, str) and constraint_name in _CONSTRAINT_MESSAGES:
             detail = _CONSTRAINT_MESSAGES[constraint_name]
         raise HTTPException(status.HTTP_409_CONFLICT, detail) from exc
@@ -101,4 +104,7 @@ async def update_account(
 async def delete_account(account_id: uuid.UUID, session: SessionDep) -> None:
     db_account = await get_account_or_404(session, account_id)
     await session.delete(db_account)
-    await session.commit()
+    # movements and templates reference the account with on delete restrict
+    await commit_or_409(
+        session, "The account has movements or templates: delete or move them first"
+    )
