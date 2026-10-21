@@ -7,6 +7,7 @@ import LoginForm from './LoginForm';
 import { getApiKey, subscribeApiKey } from './lib/auth';
 import Accounts from './pages/Accounts/Accounts';
 import Budgets from './pages/Budgets/Budgets';
+import Categories from './pages/Categories/Categories';
 import Home from './pages/Home/Home';
 import CloseResult from './pages/MonthClose/CloseResult';
 import MonthClose from './pages/MonthClose/MonthClose';
@@ -37,10 +38,7 @@ function App() {
           <Route path="reparto" element={<Surplus />} />
           <Route path="cierre" element={<MonthClose />} />
           <Route path="cierre/:month" element={<CloseResult />} />
-          <Route
-            path="categorias"
-            element={<ComingSoon eyebrow="Categorías" title="Categorías" />}
-          />
+          <Route path="categorias" element={<Categories />} />
           <Route path="mas" element={<More />} />
           <Route path="*" element={<ComingSoon eyebrow="404" title="No encontrado" />} />
         </Route>
