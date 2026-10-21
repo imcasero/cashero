@@ -8,14 +8,14 @@ engram usage) is in `../CLAUDE.md`; this file only covers the code under `backen
 ```bash
 uv sync                          # install/refresh deps into .venv
 uv add <package>                 # add a dep and update uv.lock
-uv run fastapi dev app/main.py   # dev server on :8000, docs at /docs
+uv run fastapi dev app/main.py   # dev server on :8000, docs at /docs (local only)
 uv run ruff check .              # lint
 uv run ruff format .             # format
 uv run pytest                    # unit tests (no database needed)
 ```
 
-`GET /db-check` runs `select 1` against Postgres to prove the connection; `/docs` is there for
-poking at endpoints by hand.
+`GET /db-check` runs `select 1` against Postgres to prove the connection; `/docs`, `/redoc` and `/openapi.json` are
+only served when `ENVIRONMENT=local` (see `Settings.docs_enabled`); other environments expose none.
 
 ## Tests
 

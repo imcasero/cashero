@@ -100,28 +100,33 @@ per clone (`cp backend/.env.example backend/.env`, same for `frontend/`).
 | `DATABASE_URL`  | `backend/`  | `postgresql+asyncpg://…` via the Supabase pooler (port 6543)    |
 | `API_KEY`       | `backend/`  | Static secret required in the `X-API-Key` header                |
 | `VITE_API_URL`  | `frontend/` | Base URL the browser calls                                     |
-| `VITE_API_KEY`  | `frontend/` | Must match backend `API_KEY`                                   |
 
 Backend settings are read through `app/core/config.py` (precedence: shell env > `.env` > field
 default). On the frontend only `VITE_*` vars reach the browser and Vite **inlines them at build
-time**, so restart the dev server after editing `.env`. That also means `VITE_API_KEY` is visible in
-the bundle — it's a gate for a single-user app, not a real secret.
+time**, so restart the dev server after editing `.env`. Never put a secret in a `VITE_*` var: the API
+key is deliberately not one (see Auth model).
 
 ## Auth model
 
 Every non-public endpoint requires the static `X-API-Key` header; only `GET /health` is public. The
-frontend sends it from `src/lib/api.ts` on every request. Generate a key with
+key is **not** in the bundle: the user types it into a login card, it is verified against the
+protected `GET /db-check`, and kept in `localStorage` (`cashero.apiKey`, via `src/lib/auth.ts`).
+`src/lib/api.ts` sends it on every request; a 401/403 clears it and returns the UI to the prompt.
+The app is public, so `/docs`, `/redoc` and `/openapi.json` are only served when
+`ENVIRONMENT=local`. Generate a key with
 `python -c "import secrets; print(secrets.token_urlsafe(32))"`.
 
 ## Frontend
 
 Still minimal. Two files carry the conventions:
 
-- `src/lib/env.ts` — reads and validates `VITE_API_URL` / `VITE_API_KEY`, throwing at import time if
-  either is missing, and normalizes the URL. Always read env through this module, never
+- `src/lib/env.ts` — reads and validates `VITE_API_URL`, throwing at import time if it is
+  missing, and normalizes the URL. Always read env through this module, never
   `import.meta.env` directly.
 - `src/lib/api.ts` — `apiFetch<T>` wraps `fetch` with the JSON and `X-API-Key` headers and raises a
   typed `ApiError` (status `0` means the API is unreachable). All API calls go through it.
+- `src/lib/auth.ts` — get/set/clear the API key in `localStorage` (every access in try/catch) plus a
+  subscribe hook so `App` re-renders when the key changes (`useSyncExternalStore`).
 
 ## Deploy
 
