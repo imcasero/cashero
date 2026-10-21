@@ -1,7 +1,7 @@
 import { type FormEvent, useState } from 'react';
 import { type Account, type InterestType, useSaveAccount } from '../../api/accounts';
 import { Button } from '../../components/Button';
-import { Field, Select, TextInput } from '../../components/Field';
+import { Field, Select, TextInput, UnitInput } from '../../components/Field';
 import { Notice } from '../../components/Notice';
 import { SegmentedControl } from '../../components/SegmentedControl';
 import { ApiError } from '../../lib/api';
@@ -30,29 +30,6 @@ function saveErrorMessage(error: Error): string {
     return 'Sin conexión con el servidor. No se ha guardado nada.';
   }
   return 'No se pudo guardar la cuenta. Inténtalo de nuevo.';
-}
-
-/** An input with a unit (`€`, `%`) sitting inside its right edge. */
-function UnitInput({
-  unit,
-  ...props
-}: { unit: string } & Omit<React.ComponentProps<typeof TextInput>, 'className'>) {
-  return (
-    <span className="relative block">
-      <TextInput
-        inputMode="decimal"
-        autoComplete="off"
-        className="pr-10 text-right font-mono"
-        {...props}
-      />
-      <span
-        aria-hidden="true"
-        className="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-text-2"
-      >
-        {unit}
-      </span>
-    </span>
-  );
 }
 
 type AccountFormProps = {

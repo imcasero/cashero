@@ -40,6 +40,11 @@ export function previousMonthKey(month: string): string {
   return toMonthKey(new Date(year, monthNumber - 2, 1));
 }
 
+export function nextMonthKey(month: string): string {
+  const [year, monthNumber] = month.split('-').map(Number);
+  return toMonthKey(new Date(year, monthNumber, 1));
+}
+
 /** First and last day of a `YYYY-MM` month as `YYYY-MM-DD`. */
 export function monthRange(month: string): { start: string; end: string } {
   const [year, monthNumber] = month.split('-').map(Number);

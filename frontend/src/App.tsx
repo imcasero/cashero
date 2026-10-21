@@ -6,6 +6,7 @@ import { ComingSoon, More } from './app/pages';
 import LoginForm from './LoginForm';
 import { getApiKey, subscribeApiKey } from './lib/auth';
 import Accounts from './pages/Accounts/Accounts';
+import Budgets from './pages/Budgets/Budgets';
 import Home from './pages/Home/Home';
 import Movements from './pages/Movements/Movements';
 
@@ -27,10 +28,7 @@ function App() {
           <Route index element={<Home />} />
           <Route path="movimientos" element={<Movements />} />
           <Route path="cuentas" element={<Accounts />} />
-          <Route
-            path="presupuestos"
-            element={<ComingSoon eyebrow="Presupuestos" title="Presupuestos" />}
-          />
+          <Route path="presupuestos" element={<Budgets />} />
           <Route
             path="recurrentes"
             element={<ComingSoon eyebrow="Recurrentes" title="Plantillas periódicas" />}

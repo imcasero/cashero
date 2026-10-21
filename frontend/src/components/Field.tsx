@@ -55,3 +55,26 @@ export function Select({ className = '', children, ...props }: ComponentProps<'s
     </span>
   );
 }
+
+/** An input with a unit (`€`, `%`) sitting inside its right edge. */
+export function UnitInput({
+  unit,
+  ...props
+}: { unit: string } & Omit<ComponentProps<typeof TextInput>, 'className'>) {
+  return (
+    <span className="relative block">
+      <TextInput
+        inputMode="decimal"
+        autoComplete="off"
+        className="pr-10 text-right font-mono"
+        {...props}
+      />
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-text-2"
+      >
+        {unit}
+      </span>
+    </span>
+  );
+}

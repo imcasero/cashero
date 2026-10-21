@@ -1,5 +1,5 @@
 import { Link } from 'react-router';
-import { useBudgets } from '../../api/budgets';
+import { budgetRatio, budgetTone, useBudgets } from '../../api/budgets';
 import { useCategories } from '../../api/categories';
 import { Amount } from '../../components/Amount';
 import { Card } from '../../components/Card';
@@ -7,9 +7,6 @@ import { CategoryDot } from '../../components/CategoryDot';
 import { ProgressBar } from '../../components/ProgressBar';
 import { LoadError, Skeleton } from '../../components/Skeleton';
 import { formatEur } from '../../lib/format';
-
-/** From here on a budget is "close to the limit" (the design only warns when action is needed). */
-const WARNING_RATIO = 0.85;
 
 export function BudgetsCard({ month }: { month: string }) {
   const budgets = useBudgets(month);
@@ -25,7 +22,7 @@ export function BudgetsCard({ month }: { month: string }) {
   } else {
     const categoryById = new Map(categories.data.map((category) => [category.id, category]));
     const rows = budgets.data
-      .map((budget) => ({ budget, ratio: budget.spent / budget.monthly_limit }))
+      .map((budget) => ({ budget, ratio: budgetRatio(budget) }))
       .sort((a, b) => b.ratio - a.ratio);
 
     body = (
@@ -33,7 +30,7 @@ export function BudgetsCard({ month }: { month: string }) {
         {rows.map(({ budget, ratio }) => {
           const category = categoryById.get(budget.category_id);
           const name = category?.name ?? 'Sin categoría';
-          const tone = ratio >= 1 ? 'over' : ratio >= WARNING_RATIO ? 'warning' : 'ok';
+          const tone = budgetTone(ratio);
 
           return (
             <li key={budget.id}>
