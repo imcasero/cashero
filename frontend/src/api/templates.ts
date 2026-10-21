@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiFetch } from '../lib/api';
-import { monthRange, parseDay } from '../lib/format';
+import { monthRange, parseDay, toDayKey } from '../lib/format';
 import type { CategoryKind } from './categories';
 
 export type TemplateFrequency = 'daily' | 'weekly' | 'monthly' | 'yearly';
@@ -94,6 +94,39 @@ export function occurrencesInMonth(template: MovementTemplate, month: string): n
     if (occurrence > monthEnd || (endDate && occurrence > endDate)) return count;
     if (occurrence >= monthStart && occurrence >= nextRun) count++;
   }
+}
+
+/**
+ * Dates the close of a month would generate for a template, as `YYYY-MM-DD`: everything from
+ * `next_run_on` up to `until` (the last day of the month) that is not past `end_date`. A template
+ * left behind catches up, so these can fall in earlier months. Mirrors `plan_template`.
+ */
+export function dueOccurrences(template: MovementTemplate, until: string): string[] {
+  const limit = parseDay(until);
+  const nextRun = parseDay(template.next_run_on);
+  const endDate = template.end_date ? parseDay(template.end_date) : null;
+
+  const due: string[] = [];
+  for (let index = 0; index < 20000; index++) {
+    const occurrence = occurrenceOn(template, index);
+    if ((endDate && occurrence > endDate) || occurrence > limit) break;
+    if (occurrence >= nextRun) due.push(toDayKey(occurrence));
+  }
+  return due;
+}
+
+/** True when the close up to `until` leaves the template without occurrences (it gets paused). */
+export function endsAtClose(template: MovementTemplate, until: string): boolean {
+  if (!template.end_date) return false;
+  const limit = parseDay(until);
+  const endDate = parseDay(template.end_date);
+
+  for (let index = 0; index < 20000; index++) {
+    const occurrence = occurrenceOn(template, index);
+    if (occurrence > endDate) return true;
+    if (occurrence > limit) return false;
+  }
+  return false;
 }
 
 /** Net effect of the templates still owed for `month`: income minus expenses. */

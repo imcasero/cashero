@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiFetch } from '../lib/api';
 
 export type MovementKind = 'expense' | 'income' | 'transfer';
@@ -27,15 +27,35 @@ export type MovementFilters = {
   categoryId?: string;
 };
 
-export function useMovements(month: string, { accountId, categoryId }: MovementFilters = {}) {
-  return useQuery({
+function movementsQuery(month: string, { accountId, categoryId }: MovementFilters = {}) {
+  return {
     queryKey: ['movements', { month, accountId, categoryId }],
-    queryFn: ({ signal }) => {
+    queryFn: ({ signal }: { signal: AbortSignal }) => {
       const params = new URLSearchParams({ month });
       if (accountId) params.set('account_id', accountId);
       if (categoryId) params.set('category_id', categoryId);
       return apiFetch<Movement[]>(`/movements?${params}`, { signal });
     },
+  };
+}
+
+export function useMovements(month: string, filters: MovementFilters = {}) {
+  return useQuery(movementsQuery(month, filters));
+}
+
+/** Every movement of each month in `months` (shares the cache with `useMovements`). */
+export function useMovementsOfMonths(months: string[]) {
+  return useQueries({
+    queries: months.map((month) => movementsQuery(month)),
+    combine: (results) => ({
+      isPending: results.some((result) => result.isPending),
+      isError: results.some((result) => result.isError),
+      byMonth: new Map(
+        results.flatMap((result, index) =>
+          result.data ? [[months[index], result.data] as const] : [],
+        ),
+      ),
+    }),
   });
 }
 

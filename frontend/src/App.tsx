@@ -8,6 +8,8 @@ import { getApiKey, subscribeApiKey } from './lib/auth';
 import Accounts from './pages/Accounts/Accounts';
 import Budgets from './pages/Budgets/Budgets';
 import Home from './pages/Home/Home';
+import CloseResult from './pages/MonthClose/CloseResult';
+import MonthClose from './pages/MonthClose/MonthClose';
 import Movements from './pages/Movements/Movements';
 import Surplus from './pages/Surplus/Surplus';
 import Templates from './pages/Templates/Templates';
@@ -33,10 +35,8 @@ function App() {
           <Route path="presupuestos" element={<Budgets />} />
           <Route path="recurrentes" element={<Templates />} />
           <Route path="reparto" element={<Surplus />} />
-          <Route
-            path="cierre"
-            element={<ComingSoon eyebrow="Cierre de mes" title="Cerrar un mes" />}
-          />
+          <Route path="cierre" element={<MonthClose />} />
+          <Route path="cierre/:month" element={<CloseResult />} />
           <Route
             path="categorias"
             element={<ComingSoon eyebrow="Categorías" title="Categorías" />}
