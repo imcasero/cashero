@@ -144,3 +144,22 @@ button {
 button:hover {
   border-color: var(--muted);
 }
+
+input {
+  font: 14px / 1.4 var(--sans);
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-strong);
+}
+
+input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

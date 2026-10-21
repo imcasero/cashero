@@ -1,5 +1,7 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
+import LoginForm from './LoginForm';
 import { getHealth } from './lib/api';
+import { clearApiKey, getApiKey, subscribeApiKey } from './lib/auth';
 import { env } from './lib/env';
 
 type Connection =
@@ -7,7 +9,7 @@ type Connection =
   | { state: 'ok'; status: string }
   | { state: 'error'; message: string };
 
-function App() {
+function BackendStatus() {
   const [connection, setConnection] = useState<Connection>({ state: 'loading' });
 
   const check = useCallback((signal?: AbortSignal) => {
@@ -31,39 +33,56 @@ function App() {
   }, [check]);
 
   return (
+    <section className="card">
+      <div className="card-header">
+        <h2>Estado del backend</h2>
+        <span className={`badge badge-${connection.state}`}>
+          {connection.state === 'loading' && 'Comprobando...'}
+          {connection.state === 'ok' && connection.status}
+          {connection.state === 'error' && 'Sin conexion'}
+        </span>
+      </div>
+
+      <dl>
+        <dt>API</dt>
+        <dd>
+          <code>{env.apiUrl}</code>
+        </dd>
+        <dt>Endpoint</dt>
+        <dd>
+          <code>GET /health</code>
+        </dd>
+      </dl>
+
+      {connection.state === 'error' && <p className="error">{connection.message}</p>}
+
+      <button type="button" onClick={() => check()}>
+        Reintentar
+      </button>
+    </section>
+  );
+}
+
+function App() {
+  const apiKey = useSyncExternalStore(subscribeApiKey, getApiKey);
+
+  return (
     <main className="app">
       <header>
         <h1>Cashero</h1>
         <p className="subtitle">React + Vite conectado a la API de FastAPI.</p>
       </header>
 
-      <section className="card">
-        <div className="card-header">
-          <h2>Estado del backend</h2>
-          <span className={`badge badge-${connection.state}`}>
-            {connection.state === 'loading' && 'Comprobando...'}
-            {connection.state === 'ok' && connection.status}
-            {connection.state === 'error' && 'Sin conexion'}
-          </span>
-        </div>
-
-        <dl>
-          <dt>API</dt>
-          <dd>
-            <code>{env.apiUrl}</code>
-          </dd>
-          <dt>Endpoint</dt>
-          <dd>
-            <code>GET /health</code>
-          </dd>
-        </dl>
-
-        {connection.state === 'error' && <p className="error">{connection.message}</p>}
-
-        <button type="button" onClick={() => check()}>
-          Reintentar
-        </button>
-      </section>
+      {apiKey ? (
+        <>
+          <BackendStatus />
+          <button type="button" onClick={clearApiKey}>
+            Cerrar sesión
+          </button>
+        </>
+      ) : (
+        <LoginForm />
+      )}
     </main>
   );
 }
