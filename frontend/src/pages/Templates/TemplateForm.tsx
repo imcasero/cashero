@@ -202,26 +202,31 @@ export function TemplateForm({
         <span className="text-[13px] font-medium text-text-2">Se repite</span>
         <div className="mt-1.5 flex items-center gap-3">
           <span className="text-text-2">cada</span>
-          <TextInput
-            value={count}
-            onChange={(event) => setCount(event.target.value)}
-            inputMode="numeric"
-            autoComplete="off"
-            aria-label="Cada cuántas unidades se repite"
-            aria-invalid={shown(errors.count) ? true : undefined}
-            className="w-20 shrink-0 text-center"
-          />
-          <Select
-            value={frequency}
-            onChange={(event) => setFrequency(event.target.value as TemplateFrequency)}
-            aria-label="Unidad de tiempo"
-          >
-            {FREQUENCIES.map((option) => (
-              <option key={option} value={option}>
-                {unitLabel(option, countValid ? parsedCount : 1)}
-              </option>
-            ))}
-          </Select>
+          {/* The controls are full width by default, so the width lives on the wrappers. */}
+          <div className="w-20 shrink-0">
+            <TextInput
+              value={count}
+              onChange={(event) => setCount(event.target.value)}
+              inputMode="numeric"
+              autoComplete="off"
+              aria-label="Cada cuántas unidades se repite"
+              aria-invalid={shown(errors.count) ? true : undefined}
+              className="text-center"
+            />
+          </div>
+          <div className="min-w-0 flex-1">
+            <Select
+              value={frequency}
+              onChange={(event) => setFrequency(event.target.value as TemplateFrequency)}
+              aria-label="Unidad de tiempo"
+            >
+              {FREQUENCIES.map((option) => (
+                <option key={option} value={option}>
+                  {unitLabel(option, countValid ? parsedCount : 1)}
+                </option>
+              ))}
+            </Select>
+          </div>
         </div>
         {shown(errors.count) && (
           <p role="alert" className="mt-1.5 text-[13px] text-negative">
