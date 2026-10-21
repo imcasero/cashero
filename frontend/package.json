@@ -1,15 +1,15 @@
 {
   "name": "frontend",
-  "private": true,
   "version": "0.0.0",
+  "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "oxlint",
+    "dev": "vp dev",
+    "build": "tsc -b && vp build",
+    "lint": "vp lint",
     "format": "biome format --write .",
     "format:check": "biome check .",
-    "preview": "vite preview"
+    "preview": "vp preview"
   },
   "dependencies": {
     "react": "^19.2.8",
@@ -24,8 +24,8 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.4",
     "babel-plugin-react-compiler": "^1.0.0",
-    "oxlint": "^1.75.0",
     "typescript": "~6.0.2",
-    "vite": "^8.2.0"
+    "vite": "catalog:",
+    "vite-plus": "catalog:"
   }
 }
