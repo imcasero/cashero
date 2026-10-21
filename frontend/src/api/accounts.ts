@@ -1,5 +1,6 @@
 import { useMutation, useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiFetch } from '../lib/api';
+import { formatPercent } from '../lib/format';
 
 export type InterestType = 'simple' | 'compound';
 
@@ -101,4 +102,13 @@ export function useDeleteAccount() {
       ]);
     },
   });
+}
+
+/** `2,50 % compuesto`, or `Sin interés` when the account earns nothing. */
+export function interestSummary(account: Account): string {
+  if (account.interest_type && account.interest_rate !== null) {
+    const kind = account.interest_type === 'compound' ? 'compuesto' : 'simple';
+    return `${formatPercent(account.interest_rate)} % ${kind}`;
+  }
+  return 'Sin interés';
 }

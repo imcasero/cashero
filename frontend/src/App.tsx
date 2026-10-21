@@ -9,6 +9,7 @@ import Accounts from './pages/Accounts/Accounts';
 import Budgets from './pages/Budgets/Budgets';
 import Home from './pages/Home/Home';
 import Movements from './pages/Movements/Movements';
+import Surplus from './pages/Surplus/Surplus';
 import Templates from './pages/Templates/Templates';
 
 function App() {
@@ -31,10 +32,7 @@ function App() {
           <Route path="cuentas" element={<Accounts />} />
           <Route path="presupuestos" element={<Budgets />} />
           <Route path="recurrentes" element={<Templates />} />
-          <Route
-            path="reparto"
-            element={<ComingSoon eyebrow="Reparto del sobrante" title="Reparto del sobrante" />}
-          />
+          <Route path="reparto" element={<Surplus />} />
           <Route
             path="cierre"
             element={<ComingSoon eyebrow="Cierre de mes" title="Cerrar un mes" />}

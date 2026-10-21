@@ -117,3 +117,10 @@ export function parseAmount(text: string): number | null {
 export function formatAmountInput(value: number): string {
   return value.toFixed(2).replace('.', ',');
 }
+
+const share = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 2 });
+
+/** `20` or `12,5`: a percentage without trailing zeros, for shares of the surplus. */
+export function formatShare(value: number): string {
+  return share.format(value);
+}
