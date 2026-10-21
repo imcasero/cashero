@@ -12,11 +12,12 @@ export function DeleteAccountDialog({ account, onClose }: DeleteAccountDialogPro
 
   let error: string | null = null;
   if (remove.isError) {
-    // The API answers 500 when the database refuses: movements and templates keep their account.
-    error =
-      remove.error instanceof ApiError && remove.error.status === 0
-        ? 'Sin conexión con el servidor. No se ha borrado nada.'
-        : 'No se pudo borrar la cuenta. Si tiene movimientos o plantillas, bórralos o pásalos a otra cuenta antes.';
+    // The API answers 409 when movements or templates still reference the account.
+    const status = remove.error instanceof ApiError ? remove.error.status : null;
+    if (status === 0) error = 'Sin conexión con el servidor. No se ha borrado nada.';
+    else if (status === 409)
+      error = 'La cuenta tiene movimientos o plantillas. Bórralos o pásalos a otra cuenta antes.';
+    else error = 'No se pudo borrar la cuenta. Inténtalo de nuevo.';
   }
 
   const primaryWarning = account.is_primary
