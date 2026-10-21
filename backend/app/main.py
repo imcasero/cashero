@@ -11,12 +11,16 @@ from app.movements.router import router as movements_router
 from app.surplus_allocation_rules.router import router as surplus_allocation_rules_router
 from app.system.router import router as system_router
 
-app = FastAPI(title=settings.app_name)
+app = FastAPI(
+    title=settings.app_name,
+    docs_url="/docs" if settings.docs_enabled else None,
+    redoc_url="/redoc" if settings.docs_enabled else None,
+    openapi_url="/openapi.json" if settings.docs_enabled else None,
+)
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.allowed_origins,
-    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )

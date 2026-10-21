@@ -24,6 +24,11 @@ class Settings(BaseSettings):
     # Generate one with: python -c "import secrets; print(secrets.token_urlsafe(32))"
     api_key: str = ""
 
+    @property
+    def docs_enabled(self) -> bool:
+        # Interactive docs and the OpenAPI schema are only exposed in local development.
+        return self.environment == "local"
+
     @cached_property
     def allowed_origins(self) -> list[str]:
         return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
