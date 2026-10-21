@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 
 type PageHeaderProps = {
   eyebrow: string;
-  title: string;
+  title: ReactNode;
   /** Right-aligned control, e.g. the "Añadir movimiento" button. */
   action?: ReactNode;
 };
