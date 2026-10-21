@@ -6,6 +6,7 @@ import { ComingSoon, More } from './app/pages';
 import LoginForm from './LoginForm';
 import { getApiKey, subscribeApiKey } from './lib/auth';
 import Home from './pages/Home/Home';
+import Movements from './pages/Movements/Movements';
 
 function App() {
   const apiKey = useSyncExternalStore(subscribeApiKey, getApiKey);
@@ -23,10 +24,7 @@ function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route index element={<Home />} />
-          <Route
-            path="movimientos"
-            element={<ComingSoon eyebrow="Movimientos" title="Movimientos" />}
-          />
+          <Route path="movimientos" element={<Movements />} />
           <Route path="cuentas" element={<ComingSoon eyebrow="Cuentas" title="Cuentas" />} />
           <Route
             path="presupuestos"

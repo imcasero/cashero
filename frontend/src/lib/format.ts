@@ -71,3 +71,37 @@ export function formatShortDay(day: string): string {
     .toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })
     .replace('.', '');
 }
+
+/** `YYYY-MM-DD` for a date, in local time. */
+export function toDayKey(date: Date): string {
+  return `${toMonthKey(date)}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
+export function todayKey(): string {
+  return toDayKey(new Date());
+}
+
+/** The last `count` months as `YYYY-MM`, newest first, starting at `from`. */
+export function recentMonths(from: string, count: number): string[] {
+  const months = [from];
+  while (months.length < count) months.push(previousMonthKey(months[months.length - 1]));
+  return months;
+}
+
+/**
+ * Reads what a person types in an amount field: `64,37`, `1.234,56` or `64.37`.
+ * Returns null when it is not a number.
+ */
+export function parseAmount(text: string): number | null {
+  const trimmed = text.trim().replace(/\s/g, '');
+  if (!trimmed) return null;
+  // With a comma, dots are thousands separators; without one, a dot is the decimal point.
+  const normalized = trimmed.includes(',') ? trimmed.replace(/\./g, '').replace(',', '.') : trimmed;
+  if (!/^\d*\.?\d+$|^\d+\.$/.test(normalized)) return null;
+  return Number(normalized);
+}
+
+/** `64,37`: a stored amount as it is edited in the amount field. */
+export function formatAmountInput(value: number): string {
+  return value.toFixed(2).replace('.', ',');
+}

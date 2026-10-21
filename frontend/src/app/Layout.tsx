@@ -3,6 +3,8 @@ import { NavLink, Outlet, useLocation } from 'react-router';
 import { useMonthStatus } from '../api/monthClose';
 import { Logo } from '../components/Logo';
 import { monthLabel, monthName } from '../lib/format';
+import { useMovementDialog } from '../pages/Movements/MovementDialogContext';
+import { MovementDialogProvider } from '../pages/Movements/MovementDialogProvider';
 import { BUDGETS, HOME, MORE_ITEMS, MOVEMENTS, type NavItem, SIDEBAR_ITEMS } from './nav';
 
 function PendingChip({ className = '' }: { className?: string }) {
@@ -76,6 +78,7 @@ function BottomNavLink({ item }: { item: NavItem }) {
 
 function BottomNav() {
   const { pathname } = useLocation();
+  const { openNew } = useMovementDialog();
   const moreActive = pathname === '/mas' || MORE_ITEMS.some((item) => item.to === pathname);
 
   return (
@@ -85,9 +88,9 @@ function BottomNav() {
     >
       <BottomNavLink item={HOME} />
       <BottomNavLink item={MOVEMENTS} />
-      {/* The add-movement dialog is a later task; the button is in place for it. */}
       <button
         type="button"
+        onClick={openNew}
         aria-label="Añadir movimiento"
         className="-mt-6 grid size-14 shrink-0 place-items-center rounded-sheet bg-accent text-on-accent"
       >
@@ -109,19 +112,21 @@ function BottomNav() {
 
 function Layout() {
   return (
-    <div className="flex min-h-svh">
-      <Sidebar />
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center justify-between px-4 pt-4 text-[14px] lg:hidden">
-          <Logo />
-          <PendingChip />
+    <MovementDialogProvider>
+      <div className="flex min-h-svh">
+        <Sidebar />
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center justify-between px-4 pt-4 text-[14px] lg:hidden">
+            <Logo />
+            <PendingChip />
+          </div>
+          <main className="mx-auto max-w-[1200px] px-4 pt-6 pb-28 lg:px-10 lg:pt-8 lg:pb-12">
+            <Outlet />
+          </main>
         </div>
-        <main className="mx-auto max-w-[1200px] px-4 pt-6 pb-28 lg:px-10 lg:pt-8 lg:pb-12">
-          <Outlet />
-        </main>
+        <BottomNav />
       </div>
-      <BottomNav />
-    </div>
+    </MovementDialogProvider>
   );
 }
 

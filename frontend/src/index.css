@@ -152,4 +152,9 @@
     outline: 2px solid var(--accent);
     outline-offset: 2px;
   }
+
+  /* A modal dialog does not stop the page behind it from scrolling. */
+  body:has(dialog[open]) {
+    overflow: hidden;
+  }
 }
