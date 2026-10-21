@@ -1,165 +1,155 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens from the "Cashero · interfaz web" style guide (pp. 63-64).
+ * Raw values live on :root so themes can swap them; @theme inline below exposes them
+ * to Tailwind as utilities (bg-surface, text-text-2, text-positive, ...).
+ * Dark is the default; light reuses the same names.
+ */
 :root {
-  --bg: #ffffff;
-  --surface: #f7f7f8;
-  --border: #e4e4e7;
-  --text: #52525b;
-  --text-strong: #18181b;
-  --accent: #16a34a;
-  --danger: #dc2626;
-  --muted: #a1a1aa;
+  color-scheme: dark;
 
-  --sans: system-ui, "Segoe UI", Roboto, sans-serif;
-  --mono: ui-monospace, SFMono-Regular, Consolas, monospace;
+  --bg: #0e1311;
+  --surface: #161c19;
+  --sunken: #121815;
+  --line: #28302c;
+  --text: #e6ebe8;
+  --text-2: #b0bab4;
+  --text-3: #8e9892;
+  --accent: #9fd8bf;
+  --on-accent: #0e1311;
+  --bar: #7db4a0;
 
-  font: 16px / 1.5 var(--sans);
-  color: var(--text);
-  background: var(--bg);
-  color-scheme: light dark;
-  -webkit-font-smoothing: antialiased;
+  --positive: #72d0a0;
+  --negative: #f28c69;
+  --warning: #e9b84e;
+  --info: #94bae6;
+
+  /* Not in the guide: tinted backgrounds were measured from the mockups. */
+  --warning-soft: #2e2412;
+  --info-soft: #14233a;
+  --close-soft: #251f39;
+  --close-text: #b9a6e0;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #101014;
-    --surface: #17171c;
-    --border: #2a2a32;
-    --text: #a1a1aa;
-    --text-strong: #f4f4f5;
-    --accent: #4ade80;
-    --danger: #f87171;
-    --muted: #71717a;
+/* Light palette, selected explicitly or by the OS when no theme is forced. */
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg: #f3f4f1;
+  --surface: #ffffff;
+  --sunken: #ecefea;
+  --line: #e0e3de;
+  --text: #17211d;
+  --text-2: #4e5853;
+  --text-3: #646d68;
+  --accent: #1d3d36;
+  --on-accent: #ffffff;
+  --bar: #4e8c7b;
+
+  --positive: #1c6b4f;
+  --negative: #b0421c;
+  --warning: #8a5a00;
+  --info: #2a5078;
+
+  --warning-soft: #fbf1d9;
+  --info-soft: #e3edf7;
+  --close-soft: #ece6f7;
+  --close-text: #5b3f8f;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+
+    --bg: #f3f4f1;
+    --surface: #ffffff;
+    --sunken: #ecefea;
+    --line: #e0e3de;
+    --text: #17211d;
+    --text-2: #4e5853;
+    --text-3: #646d68;
+    --accent: #1d3d36;
+    --on-accent: #ffffff;
+    --bar: #4e8c7b;
+
+    --positive: #1c6b4f;
+    --negative: #b0421c;
+    --warning: #8a5a00;
+    --info: #2a5078;
+
+    --warning-soft: #fbf1d9;
+    --info-soft: #e3edf7;
+    --close-soft: #ece6f7;
+    --close-text: #5b3f8f;
   }
 }
 
-* {
-  box-sizing: border-box;
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-sunken: var(--sunken);
+  --color-line: var(--line);
+  --color-text: var(--text);
+  --color-text-2: var(--text-2);
+  --color-text-3: var(--text-3);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-bar: var(--bar);
+  --color-positive: var(--positive);
+  --color-negative: var(--negative);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+  --color-warning-soft: var(--warning-soft);
+  --color-info-soft: var(--info-soft);
+  --color-close-soft: var(--close-soft);
+  --color-close-text: var(--close-text);
 }
 
-body {
-  margin: 0;
-  min-height: 100svh;
+@theme {
+  /* Category colours (measured from the mockups; the guide gives no hex). */
+  --color-cat-vivienda: #5b6cb1;
+  --color-cat-supermercado: #3f8f6a;
+  --color-cat-transporte: #bf7a2c;
+  --color-cat-restaurantes: #b65b49;
+  --color-cat-ocio: #8b5ba5;
+  --color-cat-suscripciones: #2e899b;
+  --color-cat-salud: #9f5179;
+  --color-cat-ropa: #7a803a;
+  --color-cat-nomina: #2e6fa7;
+  --color-cat-freelance: #4c9a8a;
+  --color-cat-intereses: #8a7a2d;
+  --color-cat-pizarra: #5d6a73;
+
+  --font-sans: "Hanken Grotesk Variable", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  --radius-control: 10px;
+  --radius-card: 14px;
+  --radius-sheet: 20px;
+
+  --breakpoint-lg: 960px;
 }
 
-.app {
-  max-width: 640px;
-  margin: 0 auto;
-  padding: 64px 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-}
+@layer base {
+  body {
+    margin: 0;
+    min-height: 100svh;
+    background: var(--bg);
+    color: var(--text);
+    font: 400 15px / 1.45 var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
 
-h1 {
-  margin: 0;
-  font-size: 32px;
-  letter-spacing: -0.6px;
-  color: var(--text-strong);
-}
+  button,
+  a,
+  input,
+  select {
+    -webkit-tap-highlight-color: transparent;
+  }
 
-h2 {
-  margin: 0;
-  font-size: 16px;
-  color: var(--text-strong);
-}
-
-.subtitle {
-  margin: 8px 0 0;
-  color: var(--muted);
-}
-
-.card {
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: var(--surface);
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.badge {
-  font: 500 13px / 1 var(--mono);
-  padding: 6px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  color: var(--muted);
-}
-
-.badge-ok {
-  color: var(--accent);
-  border-color: currentcolor;
-}
-
-.badge-error {
-  color: var(--danger);
-  border-color: currentcolor;
-}
-
-dl {
-  margin: 0;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 8px 16px;
-  align-items: center;
-}
-
-dt {
-  color: var(--muted);
-  font-size: 14px;
-}
-
-dd {
-  margin: 0;
-}
-
-code {
-  font: 13px / 1.4 var(--mono);
-  color: var(--text-strong);
-}
-
-.error {
-  margin: 0;
-  color: var(--danger);
-  font-size: 14px;
-}
-
-button {
-  align-self: flex-start;
-  font: 500 14px / 1 var(--sans);
-  padding: 10px 16px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--bg);
-  color: var(--text-strong);
-  cursor: pointer;
-}
-
-button:hover {
-  border-color: var(--muted);
-}
-
-input {
-  font: 14px / 1.4 var(--sans);
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--bg);
-  color: var(--text-strong);
-}
-
-input:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 1px;
-}
-
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
 }

@@ -1,89 +1,58 @@
-import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useEffect, useSyncExternalStore } from 'react';
+import { BrowserRouter, Route, Routes } from 'react-router';
+import Layout from './app/Layout';
+import { ComingSoon, More } from './app/pages';
 import LoginForm from './LoginForm';
-import { getHealth } from './lib/api';
-import { clearApiKey, getApiKey, subscribeApiKey } from './lib/auth';
-import { env } from './lib/env';
-
-type Connection =
-  | { state: 'loading' }
-  | { state: 'ok'; status: string }
-  | { state: 'error'; message: string };
-
-function BackendStatus() {
-  const [connection, setConnection] = useState<Connection>({ state: 'loading' });
-
-  const check = useCallback((signal?: AbortSignal) => {
-    setConnection({ state: 'loading' });
-
-    getHealth(signal)
-      .then((health) => setConnection({ state: 'ok', status: health.status }))
-      .catch((error: unknown) => {
-        if (signal?.aborted) return;
-        setConnection({
-          state: 'error',
-          message: error instanceof Error ? error.message : 'Error desconocido',
-        });
-      });
-  }, []);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    check(controller.signal);
-    return () => controller.abort();
-  }, [check]);
-
-  return (
-    <section className="card">
-      <div className="card-header">
-        <h2>Estado del backend</h2>
-        <span className={`badge badge-${connection.state}`}>
-          {connection.state === 'loading' && 'Comprobando...'}
-          {connection.state === 'ok' && connection.status}
-          {connection.state === 'error' && 'Sin conexion'}
-        </span>
-      </div>
-
-      <dl>
-        <dt>API</dt>
-        <dd>
-          <code>{env.apiUrl}</code>
-        </dd>
-        <dt>Endpoint</dt>
-        <dd>
-          <code>GET /health</code>
-        </dd>
-      </dl>
-
-      {connection.state === 'error' && <p className="error">{connection.message}</p>}
-
-      <button type="button" onClick={() => check()}>
-        Reintentar
-      </button>
-    </section>
-  );
-}
+import { getApiKey, subscribeApiKey } from './lib/auth';
+import Home from './pages/Home/Home';
 
 function App() {
   const apiKey = useSyncExternalStore(subscribeApiKey, getApiKey);
+  const queryClient = useQueryClient();
+
+  // Never keep the previous session's data once the key is gone.
+  useEffect(() => {
+    if (!apiKey) queryClient.clear();
+  }, [apiKey, queryClient]);
+
+  if (!apiKey) return <LoginForm />;
 
   return (
-    <main className="app">
-      <header>
-        <h1>Cashero</h1>
-        <p className="subtitle">React + Vite conectado a la API de FastAPI.</p>
-      </header>
-
-      {apiKey ? (
-        <>
-          <BackendStatus />
-          <button type="button" onClick={clearApiKey}>
-            Cerrar sesión
-          </button>
-        </>
-      ) : (
-        <LoginForm />
-      )}
-    </main>
+    <BrowserRouter>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route
+            path="movimientos"
+            element={<ComingSoon eyebrow="Movimientos" title="Movimientos" />}
+          />
+          <Route path="cuentas" element={<ComingSoon eyebrow="Cuentas" title="Cuentas" />} />
+          <Route
+            path="presupuestos"
+            element={<ComingSoon eyebrow="Presupuestos" title="Presupuestos" />}
+          />
+          <Route
+            path="recurrentes"
+            element={<ComingSoon eyebrow="Recurrentes" title="Plantillas periódicas" />}
+          />
+          <Route
+            path="reparto"
+            element={<ComingSoon eyebrow="Reparto del sobrante" title="Reparto del sobrante" />}
+          />
+          <Route
+            path="cierre"
+            element={<ComingSoon eyebrow="Cierre de mes" title="Cerrar un mes" />}
+          />
+          <Route
+            path="categorias"
+            element={<ComingSoon eyebrow="Categorías" title="Categorías" />}
+          />
+          <Route path="mas" element={<More />} />
+          <Route path="*" element={<ComingSoon eyebrow="404" title="No encontrado" />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
