@@ -77,6 +77,13 @@ export function formatShortDay(day: string): string {
     .replace('.', '');
 }
 
+/** `28 sept 2026`. */
+export function formatDayWithYear(day: string): string {
+  return parseDay(day)
+    .toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })
+    .replace('.', '');
+}
+
 /** `YYYY-MM-DD` for a date, in local time. */
 export function toDayKey(date: Date): string {
   return `${toMonthKey(date)}-${String(date.getDate()).padStart(2, '0')}`;

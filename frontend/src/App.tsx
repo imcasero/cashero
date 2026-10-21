@@ -9,6 +9,7 @@ import Accounts from './pages/Accounts/Accounts';
 import Budgets from './pages/Budgets/Budgets';
 import Home from './pages/Home/Home';
 import Movements from './pages/Movements/Movements';
+import Templates from './pages/Templates/Templates';
 
 function App() {
   const apiKey = useSyncExternalStore(subscribeApiKey, getApiKey);
@@ -29,10 +30,7 @@ function App() {
           <Route path="movimientos" element={<Movements />} />
           <Route path="cuentas" element={<Accounts />} />
           <Route path="presupuestos" element={<Budgets />} />
-          <Route
-            path="recurrentes"
-            element={<ComingSoon eyebrow="Recurrentes" title="Plantillas periódicas" />}
-          />
+          <Route path="recurrentes" element={<Templates />} />
           <Route
             path="reparto"
             element={<ComingSoon eyebrow="Reparto del sobrante" title="Reparto del sobrante" />}
